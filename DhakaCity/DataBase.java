@@ -1,5 +1,6 @@
 package DhakaCity;
 
+import javax.swing.*;
 import java.sql.*;
 
 public class DataBase {
@@ -20,8 +21,10 @@ public class DataBase {
 
             System.out.println("Database connected");
         } catch (ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(null,"Please connect Database");
             throw new RuntimeException(e);
         } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null,"Please connect Database");
             throw new RuntimeException(e);
         }
     }

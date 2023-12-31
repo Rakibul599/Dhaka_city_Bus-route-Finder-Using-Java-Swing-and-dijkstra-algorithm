@@ -46,11 +46,11 @@ public class shortestpath {
                 }
             }
         }
-        System.out.println("Shortest Path");
-        for (int i = 0; i < node; i++) {
-            System.out.println("U>>V" + " " + parrent[i] + ">>" + i + " " + "w=" + arr[parrent[i]][i]);
-        }
-        System.out.println("Shortest path with destination");
+//        System.out.println("Shortest Path");
+//        for (int i = 0; i < node; i++) {
+//            System.out.println("U>>V" + " " + parrent[i] + ">>" + i + " " + "w=" + arr[parrent[i]][i]);
+//        }
+//        System.out.println("Shortest path with destination");
         int current=dst;
         int[] res=new int[100];
         int c=0;

@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class Login extends JFrame implements ActionListener {
     private Container c;
@@ -99,18 +102,41 @@ public class Login extends JFrame implements ActionListener {
         }
 
             if (e.getSource()==logb && lgd.equals("G")) {
-                if(username.equals("Rakibul") && pass.equals("123"))
-                {
-                    JOptionPane.showMessageDialog(null,"Login Successfully");
-                    dispose();
-                    General frame=new General();
-                    frame.setVisible(true);
-                    frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-                }
-            else
-                JOptionPane.showMessageDialog(null,"Oops! UserName Or Password Wrong");
+                DataBase db=new DataBase();
+                db.connection();
+                String usern=UserName.getText();
+                String pas=password.getText();
+                try {
+                    PreparedStatement ps=db.con.prepareStatement("select * from userinf");
+                    ResultSet rs=ps.executeQuery();
+                    int f=0;
+                    while (rs.next())
+                    {
+                        String us=rs.getString("user_name");
+                        String em=rs.getString("email");
+                        String pa=rs.getString("pass_word");
+                        if((usern.equals(us)||usern.equals(em)) && pas.equals(pa) )
+                        {
+                            f=1;
+                            break;
+                        }
 
-        }
+                    }
+                    if(f==1)
+                    {
+                        JOptionPane.showMessageDialog(null,"Login Successfully");
+                        dispose();
+                        General frame=new General();
+                        frame.setVisible(true);
+                        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+                    }
+                    else
+                        JOptionPane.showMessageDialog(null,"User Name Or Password error");
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+            }
 
         if(e.getSource()==accb)
         {
@@ -129,7 +155,7 @@ public class Login extends JFrame implements ActionListener {
 
     }
     public static void main(String[] args) {
-        Login frame=new Login("A");
+        Login frame=new Login("G");
         frame.setVisible(true);
 
     }

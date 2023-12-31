@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 public class General extends JFrame implements ActionListener {
     private Container c;
 
@@ -14,7 +13,7 @@ public class General extends JFrame implements ActionListener {
     private JLabel imgl,wlc,FromL,ToL;
     private JTextField From,To;
     private JTextArea TR;
-    private JButton Search,cls;
+    private JButton Search,cls,del;
     private Cursor cursor;
     private ImageIcon img;
     private Font f,f1;
@@ -90,6 +89,10 @@ public class General extends JFrame implements ActionListener {
         cls.setCursor(cursor);
         p1.add(cls);
 
+        del=new JButton("Delete Account?");
+        del.setBounds(470,75,100,25);
+        p1.add(del);
+
         Search =new JButton("Search");
         Search.setBounds(200,130,150,40);
         Search.setFont(f1);
@@ -103,12 +106,14 @@ public class General extends JFrame implements ActionListener {
         TR.setBounds(5,5,565,175);
         Color wh1=new Color(250,241,241);
         TR.setBackground(wh1);
+        TR.setEditable(false);
         TR.setFont(f1);
         p2.add(TR);
 
 
         Search.addActionListener(this);
         cls.addActionListener(this);
+        del.addActionListener(this);
 
     }
 
@@ -120,6 +125,19 @@ public class General extends JFrame implements ActionListener {
             DhakaCityBusRoute fr=new DhakaCityBusRoute();
             fr.setVisible(true);
             fr.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        }
+        if(e.getSource()==del)
+        {
+            int reply= JOptionPane.showConfirmDialog(null, "Are you sure ?", "Quit", JOptionPane.YES_NO_OPTION);
+            if(reply==JOptionPane.YES_NO_OPTION)
+            {
+                dispose();
+                deleteacc frame=new deleteacc();
+                frame.setVisible(true);
+                frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+            }
+
         }
         if(e.getSource()==Search)
         {
@@ -147,7 +165,6 @@ public class General extends JFrame implements ActionListener {
                     rd.next();
                     int src=rs.getInt("node");
                     int ds=rd.getInt("node");
-//                    JOptionPane.showMessageDialog(null,"Rakib"+rs.getInt("node"));
                     PreparedStatement psrdb1=db.con.prepareStatement("select * from routedb1");
                     ResultSet rsdb1=psrdb1.executeQuery();
                     for (int i = 0; i < node; i++) {
@@ -160,17 +177,17 @@ public class General extends JFrame implements ActionListener {
                         int v=rsdb1.getInt("node2");
                         int w=rsdb1.getInt("weight");
                         arr[u][v]=arr[v][u]=w;
-                        System.out.println(u+"--"+v+"--"+w);
+//                        System.out.println(u+"--"+v+"--"+w);
                     }
-                    for (int i = 0; i < node; i++) {
-                        for (int j = 0; j < node; j++) {
-                            System.out.print(arr[i][j] + " ");
-                        }
-                        System.out.println();
-                    }
-                    System.out.println("source:"+src+" "+ds);
+//                    for (int i = 0; i < node; i++) {
+//                        for (int j = 0; j < node; j++) {
+//                            System.out.print(arr[i][j] + " ");
+//                        }
+//                        System.out.println();
+//                    }
+//                    System.out.println("source:"+src+" "+ds);
                    int[] sort =srp.dijkstra(arr,src,ds,node,edge);
-                    System.out.println("RR"+sort.length);
+
                     int l=sort.length;
                     int[] res1=new int[100];
                     int c=0;
@@ -178,6 +195,8 @@ public class General extends JFrame implements ActionListener {
                     {
                        res1[c++]=sort[i];
                     }
+
+
                     PreparedStatement out=db.con.prepareStatement("select Destination_Name from routedb where node=?");
                     for (int i=c-1;i>=0;i--)
                     {
@@ -186,18 +205,23 @@ public class General extends JFrame implements ActionListener {
                         ResultSet rso=out.executeQuery();
                         rso.next();
                         String ss=rso.getString("Destination_Name");
-                        System.out.println(res1[i]+" ");
-                        System.out.println(ss+" ");
                         TR.append(ss+">>");
 
                     }
+                    PreparedStatement psb=db.con.prepareStatement("select bus_name FROM businf where node=?");
+                    psb.setInt(1,ds);
+                    ResultSet rsb=psb.executeQuery();
+                    rsb.next();
+                    String bus_n=rsb.getString("bus_name");
                     TR.append("\n");
+                    TR.append("Bus Name: "+bus_n+"\n");
                     int kmm=srp.GetKilomiter();
                     TR.append("Total Kilometers: " + kmm);
                     int ren=kmm*3;
                     TR.append("\n");
                     TR.append("Total Rent: "+ren);
                 } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null,"Not Found");
                     throw new RuntimeException(ex);
                 }
 
